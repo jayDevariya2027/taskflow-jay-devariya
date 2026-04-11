@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",
-    "migrate:create": "node-pg-migrate create -j sql"
+    "migrate:create": "node-pg-migrate create -j sql",
+    "seed": "psql -U postgres -d taskflow -f seeds/seed.sql"
   },
   "keywords": [],
   "author": "Jay Devariya",
