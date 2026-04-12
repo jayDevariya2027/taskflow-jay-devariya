@@ -12,26 +12,42 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="border-b bg-white sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="border-b border-slate-200 bg-white sticky top-0 z-50 shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        {/* Logo */}
         <Link
           to="/projects"
-          className="flex items-center gap-2 font-semibold text-lg text-slate-800"
+          className="flex items-center gap-2 font-bold text-base sm:text-lg text-indigo-600 flex-shrink-0"
         >
-          <LayoutDashboard size={20} className="text-blue-600" />
+          <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <LayoutDashboard size={15} className="text-white" />
+          </div>
           TaskFlow
         </Link>
 
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-600">
-            {user?.name}
-          </span>
+        {/* Right side */}
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          {/* Avatar + name */}
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center
+              justify-center text-indigo-600 font-semibold text-xs flex-shrink-0">
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <span className="text-sm font-medium text-slate-700 truncate max-w-[80px] sm:max-w-none">
+              {user?.name}
+            </span>
+          </div>
+
+          <div className="w-px h-4 bg-slate-200 flex-shrink-0" />
+
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-red-500 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-slate-500
+              hover:text-red-500 transition-colors font-medium flex-shrink-0"
           >
-            <LogOut size={16} />
-            Logout
+            <LogOut size={15} />
+            <span className="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>

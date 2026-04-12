@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getProjects, deleteProject } from '../api/projects';
 import { type Project } from '../types';
-import { Plus, Folder, Trash2, ChevronRight, Loader2 } from 'lucide-react';
+import { Plus, Folder, Trash2, ChevronRight, Loader2, LayoutDashboard } from 'lucide-react';
 import CreateProjectModal from '../components/CreateProjectModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 
@@ -34,16 +34,20 @@ const ProjectsPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="animate-spin text-blue-600" size={32} />
+        <Loader2 className="animate-spin text-indigo-600" size={32} />
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-red-500 font-medium">Failed to load projects</p>
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center
+            justify-center mx-auto mb-4">
+            <LayoutDashboard size={20} className="text-red-500" />
+          </div>
+          <p className="text-red-500 font-semibold">Failed to load projects</p>
           <p className="text-slate-400 text-sm mt-1">Please try refreshing the page</p>
         </div>
       </div>
@@ -52,38 +56,50 @@ const ProjectsPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Projects</h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+              Projects
+            </h1>
+            <p className="text-slate-500 text-sm mt-0.5">
               {projects?.length || 0} project{projects?.length !== 1 ? 's' : ''}
             </p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700
-              text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600
+              hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
+              transition-colors shadow-sm"
           >
             <Plus size={16} />
-            New Project
+            <span className="hidden sm:inline">New Project</span>
+            <span className="sm:hidden">New</span>
           </button>
         </div>
 
         {/* Empty state */}
         {projects?.length === 0 && (
-          <div className="text-center py-20">
-            <Folder size={48} className="text-slate-300 mx-auto mb-4" />
-            <h3 className="text-slate-600 font-medium">No projects yet</h3>
-            <p className="text-slate-400 text-sm mt-1">
-              Create your first project to get started
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center
+              justify-center mb-4">
+              <Folder size={28} className="text-indigo-400" />
+            </div>
+            <h3 className="text-slate-700 font-semibold text-lg">
+              No projects yet
+            </h3>
+            <p className="text-slate-400 text-sm mt-1 max-w-xs">
+              Create your first project to start organizing your tasks
             </p>
             <button
               onClick={() => setShowModal(true)}
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700
-                text-white text-sm font-medium rounded-lg transition-colors"
+              className="mt-6 flex items-center gap-2 px-5 py-2.5 bg-indigo-600
+                hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
+                transition-colors shadow-sm"
             >
+              <Plus size={16} />
               Create Project
             </button>
           </div>
@@ -96,17 +112,19 @@ const ProjectsPage = () => {
               <div
                 key={project.id}
                 onClick={() => navigate(`/projects/${project.id}`)}
-                className="bg-white rounded-xl border p-6 hover:shadow-md hover:border-blue-200
-                  transition-all group cursor-pointer"
+                className="bg-white rounded-xl border border-slate-200 p-5
+                  hover:shadow-md hover:border-indigo-200 transition-all
+                  group cursor-pointer"
               >
-                <div className="flex items-start justify-between">
+                {/* Card header */}
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center
+                    <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center
                       justify-center flex-shrink-0">
-                      <Folder size={18} className="text-blue-600" />
+                      <Folder size={17} className="text-indigo-500" />
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-semibold text-slate-800 truncate">
+                      <h3 className="font-semibold text-slate-800 truncate text-sm">
                         {project.name}
                       </h3>
                       <p className="text-xs text-slate-400 mt-0.5">
@@ -114,28 +132,35 @@ const ProjectsPage = () => {
                       </p>
                     </div>
                   </div>
+
+                  {/* Delete button — visible on hover */}
                   <button
                     onClick={(e) => handleDeleteClick(e, project.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400
-                      hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300
+                      hover:text-red-500 hover:bg-red-50 rounded-lg transition-all
+                      flex-shrink-0"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
 
+                {/* Description */}
                 {project.description && (
-                  <p className="mt-3 text-sm text-slate-500 line-clamp-2">
+                  <p className="mt-3 text-xs text-slate-500 line-clamp-2 leading-relaxed">
                     {project.description}
                   </p>
                 )}
 
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs text-slate-400">
+                {/* Footer */}
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center
+                  justify-between">
+                  <span className="text-xs text-slate-400 font-medium">
                     {project.task_count || 0} task{Number(project.task_count) !== 1 ? 's' : ''}
                   </span>
                   <ChevronRight
-                    size={16}
-                    className="text-slate-300 group-hover:text-blue-500 transition-colors"
+                    size={15}
+                    className="text-slate-300 group-hover:text-indigo-500
+                      transition-colors"
                   />
                 </div>
               </div>
