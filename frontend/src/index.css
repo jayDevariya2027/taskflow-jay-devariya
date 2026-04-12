@@ -25,6 +25,12 @@
   }
 }
 
+button,
+[role="button"],
+a {
+  cursor: pointer;
+}
+
 @layer base {
   * {
     border-color: hsl(var(--border));
