@@ -20,6 +20,6 @@ CREATE INDEX idx_tasks_assignee_id ON tasks(assignee_id);
 CREATE INDEX idx_tasks_status ON tasks(status);
 
 -- Down Migration
--- DROP TABLE tasks;
--- DROP TYPE task_status;
--- DROP TYPE task_priority;
+DROP TABLE tasks;
+DROP TYPE task_status;
+DROP TYPE task_priority;

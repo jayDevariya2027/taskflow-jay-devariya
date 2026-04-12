@@ -10,4 +10,4 @@ CREATE TABLE projects (
 CREATE INDEX idx_projects_owner_id ON projects(owner_id);
 
 -- Down Migration
--- DROP TABLE projects;
+DROP TABLE projects;

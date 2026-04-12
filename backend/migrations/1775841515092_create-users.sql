@@ -12,4 +12,4 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users(email);
 
 -- Down Migration
--- DROP TABLE users;
+DROP TABLE users;
