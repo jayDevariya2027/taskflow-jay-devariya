@@ -13,7 +13,9 @@ const createTaskSchema = z.object({
   description: z.string().optional(),
   status: z.enum(['todo', 'in_progress', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
-  assignee_id: z.string().uuid('assignee_id must be a valid uuid').optional(),
+  assignee_id: z
+    .union([z.string().uuid('assignee_id must be a valid uuid'), z.literal('')])
+    .optional(),
   due_date: z.string().optional(),
 });
 
@@ -22,7 +24,9 @@ const updateTaskSchema = z.object({
   description: z.string().optional(),
   status: z.enum(['todo', 'in_progress', 'done']).optional(),
   priority: z.enum(['low', 'medium', 'high']).optional(),
-  assignee_id: z.string().uuid('assignee_id must be a valid uuid').optional(),
+  assignee_id: z
+    .union([z.string().uuid('assignee_id must be a valid uuid'), z.literal('')])
+    .optional(),
   due_date: z.string().optional(),
 });
 

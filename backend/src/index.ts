@@ -6,6 +6,7 @@ import { pool } from './db';
 import authRoutes from './routes/auth.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
+import userRoutes from './routes/user.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(pinoHttp({
 app.use('/auth', authRoutes);
 app.use('/projects', projectRoutes);
 app.use('/', taskRoutes);
+app.use('/users', userRoutes);
 
 // Health check
 app.get('/health', async (req, res) => {

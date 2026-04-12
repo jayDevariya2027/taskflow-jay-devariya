@@ -34,7 +34,7 @@ export const updateTask = async (
     description?: string;
     status?: string;
     priority?: string;
-    assignee_id?: string;
+    assignee_id?: string | null;
     due_date?: string;
   }
 ): Promise<Task> => {

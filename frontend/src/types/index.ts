@@ -38,3 +38,9 @@ export interface ApiError {
   error: string;
   fields?: Record<string, string>;
 }
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+}

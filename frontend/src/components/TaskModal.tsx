@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { createTask, updateTask } from '../api/tasks';
-import { type Task } from '../types';
+import { getUsers } from '../api/users';
+import { type Task, type Member } from '../types';
 import { X, Loader2 } from 'lucide-react';
 
 interface Props {
@@ -36,6 +37,11 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const { data: users = [] } = useQuery<Member[]>({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  });
+
   useEffect(() => {
     if (task) {
       setForm({
@@ -58,7 +64,7 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
         description: form.description || undefined,
         status: form.status,
         priority: form.priority,
-        assignee_id: form.assignee_id || undefined,
+        assignee_id: form.assignee_id === '' ? '' : form.assignee_id,
         due_date: form.due_date || undefined,
       };
       return isEditing
@@ -142,7 +148,9 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
             </label>
             <textarea
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500
                 text-sm outline-none transition-colors resize-none"
               placeholder="Add a description..."
@@ -187,6 +195,29 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Assignee */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Assignee{' '}
+              <span className="text-slate-400 font-normal">(optional)</span>
+            </label>
+            <select
+              value={form.assignee_id}
+              onChange={(e) =>
+                setForm({ ...form, assignee_id: e.target.value })
+              }
+              className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500
+                text-sm outline-none transition-colors bg-white"
+            >
+              <option value="">Unassigned</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.email})
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Due Date */}

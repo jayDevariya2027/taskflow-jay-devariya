@@ -131,7 +131,7 @@ export const updateTask = async (
 
   if (data.assignee_id !== undefined) {
     fields.push(`assignee_id = $${paramCount++}`);
-    values.push(data.assignee_id);
+    values.push(data.assignee_id === '' ? null : data.assignee_id);
   }
 
   if (data.due_date !== undefined) {
