@@ -55,14 +55,14 @@ const RegisterPage = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <LayoutDashboard size={28} className="text-blue-600" />
+            <LayoutDashboard size={28} className="text-indigo-600" />
             <span className="text-2xl font-bold text-slate-800">TaskFlow</span>
           </div>
           <p className="text-slate-500 text-sm">Create your account</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl shadow-sm border p-8">
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
           {apiError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
               {apiError}
@@ -78,10 +78,10 @@ const RegisterPage = () => {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all
                   ${errors.name
-                    ? 'border-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:border-blue-500'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-50'
+                    : 'border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 hover:border-indigo-300 bg-slate-50 focus:bg-white'
                   }`}
                 placeholder="Jay Devariya"
               />
@@ -98,10 +98,10 @@ const RegisterPage = () => {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all
                   ${errors.email
-                    ? 'border-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:border-blue-500'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-50'
+                    : 'border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 hover:border-indigo-300 bg-slate-50 focus:bg-white'
                   }`}
                 placeholder="you@example.com"
               />
@@ -118,10 +118,10 @@ const RegisterPage = () => {
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className={`w-full px-3 py-2 rounded-lg border text-sm outline-none transition-colors
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all
                   ${errors.password
-                    ? 'border-red-400 focus:border-red-400'
-                    : 'border-slate-300 focus:border-blue-500'
+                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-50'
+                    : 'border-slate-200 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/20 hover:border-indigo-300 bg-slate-50 focus:bg-white'
                   }`}
                 placeholder="••••••••"
               />
@@ -133,8 +133,8 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400
-                text-white text-sm font-medium rounded-lg transition-colors"
+              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400
+                text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-600/20 transition-all hover:shadow-lg hover:shadow-indigo-600/30 active:scale-[0.98]"
             >
               {loading ? 'Creating account...' : 'Create account'}
             </button>
@@ -142,7 +142,7 @@ const RegisterPage = () => {
 
           <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:underline font-medium">
+            <Link to="/login" className="text-indigo-600 hover:underline font-semibold">
               Sign in
             </Link>
           </p>
