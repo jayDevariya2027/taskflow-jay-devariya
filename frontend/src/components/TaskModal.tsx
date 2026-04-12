@@ -6,7 +6,7 @@ import { type Task, type Member } from '../types';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { parseApiError } from '../lib/errors';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 interface Props {
   projectId: string;
   task?: Task;
@@ -173,36 +173,36 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Status
                 </label>
-                <select
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className={inputClass}
-                >
-                  {STATUS_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={form.status} onValueChange={(val) => setForm({ ...form, status: val })}>
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Priority
                 </label>
-                <select
-                  value={form.priority}
-                  onChange={(e) =>
-                    setForm({ ...form, priority: e.target.value })
-                  }
-                  className={inputClass}
-                >
-                  {PRIORITY_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={form.priority} onValueChange={(val) => setForm({ ...form, priority: val })}>
+                  <SelectTrigger className={inputClass}>
+                    <SelectValue placeholder="Select Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITY_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -212,20 +212,22 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
                 Assignee{' '}
                 <span className="text-slate-400 font-normal">(optional)</span>
               </label>
-              <select
-                value={form.assignee_id}
-                onChange={(e) =>
-                  setForm({ ...form, assignee_id: e.target.value })
-                }
-                className={inputClass}
+              <Select 
+                value={form.assignee_id || "unassigned"} 
+                onValueChange={(val) => setForm({ ...form, assignee_id: val === "unassigned" ? "" : val })}
               >
-                <option value="">Unassigned</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} ({user.email})
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className={inputClass}>
+                  <SelectValue placeholder="Select Assignee" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name} ({user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Due Date */}

@@ -5,7 +5,7 @@ import { type Task } from '../types';
 import { Pencil, Trash2, Calendar, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { parseApiError } from '../lib/errors';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 interface Props {
   task: Task;
   projectId: string;
@@ -45,8 +45,8 @@ const TaskCard = ({ task, projectId, isOwner, onEdit, onDelete }: Props) => {
     },
   }); 
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    statusMutation.mutate(e.target.value);
+  const handleStatusChange = (value: string) => {
+    statusMutation.mutate(value);
   };
 
   return (
@@ -100,20 +100,20 @@ const TaskCard = ({ task, projectId, isOwner, onEdit, onDelete }: Props) => {
         </span>
 
         {isOwner ? (
-          <select
-            value={optimisticStatus}
-            onChange={handleStatusChange}
-            onClick={(e) => e.stopPropagation()}
-            className="text-xs border border-slate-200 rounded-lg px-2 py-1
-              outline-none bg-slate-50 text-slate-600 hover:border-indigo-300
-              transition-colors max-w-[110px]"
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Select value={optimisticStatus} onValueChange={handleStatusChange}>
+              <SelectTrigger className="h-7 text-xs px-2 py-1 max-w-[125px] bg-slate-50 border-slate-200 text-slate-600 focus:ring-0 focus:ring-offset-0 focus:border-indigo-300">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         ) : (
           <span className="text-xs border border-slate-200 rounded-lg px-2 py-1
             bg-slate-50 text-slate-600">

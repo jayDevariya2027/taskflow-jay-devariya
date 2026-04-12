@@ -11,7 +11,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { toast } from 'sonner';
 import { parseApiError } from '../lib/errors';
 import { useAuth } from '../context/AuthContext';
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 const STATUS_COLUMNS = [
   { key: 'todo', label: 'Todo' },
   { key: 'in_progress', label: 'In Progress' },
@@ -34,7 +34,7 @@ const ProjectDetailPage = () => {
   const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [deletingTask, setDeletingTask] = useState<Task | undefined>();
   const [statusFilter, setStatusFilter] = useState('');
-  const [assigneeFilter, setAssigneeFilter] = useState('');
+  const [assigneeFilter, setAssigneeFilter] = useState('all');
 
   const { data: project, isLoading, isError } = useQuery({
     queryKey: ['project', id],
@@ -94,7 +94,7 @@ const ProjectDetailPage = () => {
 
   const filteredTasks = tasks.filter((t) => {
     const matchesStatus = statusFilter ? t.status === statusFilter : true;
-    const matchesAssignee = assigneeFilter ? t.assignee_id === assigneeFilter : true;
+    const matchesAssignee = assigneeFilter !== 'all' ? t.assignee_id === assigneeFilter : true;
     return matchesStatus && matchesAssignee;
   });
 
@@ -176,20 +176,19 @@ const ProjectDetailPage = () => {
           {/* Assignee filter */}
           <div className="flex items-center gap-2">
             <span className="text-slate-500 font-medium flex-shrink-0">Assignee:</span>
-            <select
-              value={assigneeFilter}
-              onChange={(e) => setAssigneeFilter(e.target.value)}
-              className="border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 
-                hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 
-                focus:border-indigo-600 transition-colors shadow-sm cursor-pointer"
-            >
-              <option value="">All</option>
-              {assignees.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
+            <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Select assignee" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {assignees.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -223,7 +222,7 @@ const ProjectDetailPage = () => {
               Try changing your filters
             </p>
             <button
-              onClick={() => { setStatusFilter(''); setAssigneeFilter(''); }}
+              onClick={() => { setStatusFilter(''); setAssigneeFilter('all'); }}
               className="mt-4 text-sm text-indigo-600 hover:underline"
             >
               Clear filters
