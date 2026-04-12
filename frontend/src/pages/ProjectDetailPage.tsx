@@ -151,20 +151,20 @@ const ProjectDetailPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="flex flex-wrap items-center gap-6 sm:gap-8 mb-6 text-sm">
           {/* Status filter */}
           <div className="flex items-center gap-2 overflow-x-auto">
-            <span className="text-sm text-slate-500 flex-shrink-0">Status:</span>
+            <span className="text-slate-500 font-medium flex-shrink-0">Status:</span>
             <div className="flex gap-2">
               {[{ key: '', label: 'All' }, ...STATUS_COLUMNS].map((s) => (
                 <button
                   key={s.key}
                   onClick={() => setStatusFilter(s.key)}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium
-                    transition-colors whitespace-nowrap
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium border
+                    transition-all whitespace-nowrap
                     ${statusFilter === s.key
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
+                      ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm ring-2 ring-indigo-600/30'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300'
                     }`}
                 >
                   {s.label}
@@ -173,42 +173,45 @@ const ProjectDetailPage = () => {
             </div>
           </div>
 
-          {/* Assignee filter — only show if there are assigned tasks */}
-          {assignees.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500 flex-shrink-0">Assignee:</span>
-              <div className="flex gap-2 flex-wrap">
-                <button
-                  onClick={() => setAssigneeFilter('')}
-                  className={`text-xs px-3 py-1.5 rounded-full font-medium
-                    transition-colors whitespace-nowrap
-                    ${assigneeFilter === ''
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
-                    }`}
-                >
-                  All
-                </button>
-                {assignees.map((a) => (
-                  <button
-                    key={a.id}
-                    onClick={() => setAssigneeFilter(a.id)}
-                    className={`text-xs px-3 py-1.5 rounded-full font-medium
-                      transition-colors whitespace-nowrap
-                      ${assigneeFilter === a.id
-                        ? 'bg-indigo-600 text-white shadow-sm'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
-                      }`}
-                  >
-                    {a.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Assignee filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500 font-medium flex-shrink-0">Assignee:</span>
+            <select
+              value={assigneeFilter}
+              onChange={(e) => setAssigneeFilter(e.target.value)}
+              className="border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 
+                hover:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-600/30 
+                focus:border-indigo-600 transition-colors shadow-sm cursor-pointer"
+            >
+              <option value="">All</option>
+              {assignees.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Empty state */}
+        {/* Empty states */}
+        {tasks.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mb-4">
+              <ClipboardList size={24} className="text-slate-400" />
+            </div>
+            <h3 className="text-slate-700 font-semibold">No tasks yet</h3>
+            <p className="text-slate-400 text-sm mt-1">Get started by creating a new task.</p>
+            {isOwner && (
+              <button
+                onClick={() => setShowTaskModal(true)}
+                className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm inline-flex items-center gap-2"
+              >
+                <Plus size={16} /> Add your first task
+              </button>
+            )}
+          </div>
+        )}
+
         {tasks.length > 0 && filteredTasks.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center
@@ -233,6 +236,11 @@ const ProjectDetailPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
             {STATUS_COLUMNS.map((col) => {
               const colTasks = getTasksByStatus(col.key);
+              
+              if (colTasks.length === 0) {
+                return null;
+              }
+
               const styles = STATUS_STYLES[col.key as keyof typeof STATUS_STYLES];
 
               return (
@@ -251,23 +259,16 @@ const ProjectDetailPage = () => {
 
                   {/* Task list */}
                   <div className="flex flex-col gap-3">
-                    {colTasks.length === 0 ? (
-                      <div className="border-2 border-dashed border-slate-200
-                        rounded-xl p-6 text-center">
-                        <p className="text-xs text-slate-400">No tasks</p>
-                      </div>
-                    ) : (
-                      colTasks.map((task) => (
-                        <TaskCard
-                          key={task.id}
-                          task={task}
-                          projectId={id!}
-                          isOwner={isOwner}
-                          onEdit={handleEditTask}
-                          onDelete={setDeletingTask}
-                        />
-                      ))
-                    )}
+                    {colTasks.map((task) => (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        projectId={id!}
+                        isOwner={isOwner}
+                        onEdit={handleEditTask}
+                        onDelete={setDeletingTask}
+                      />
+                    ))}
                   </div>
                 </div>
               );
