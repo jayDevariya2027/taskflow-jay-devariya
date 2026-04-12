@@ -2,10 +2,12 @@ import { query } from '../db';
 
 export const getProjects = async (userId: string) => {
   const result = await query(
-    `SELECT DISTINCT p.id, p.name, p.description, p.owner_id, p.created_at
+    `SELECT DISTINCT p.id, p.name, p.description, p.owner_id, p.created_at,
+     COUNT(t.id) as task_count
      FROM projects p
      LEFT JOIN tasks t ON t.project_id = p.id
      WHERE p.owner_id = $1 OR t.assignee_id = $1
+     GROUP BY p.id
      ORDER BY p.created_at DESC`,
     [userId]
   );

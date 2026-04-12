@@ -131,7 +131,7 @@ const ProjectsPage = () => {
 
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xs text-slate-400">
-                    {project.tasks?.length || 0} tasks
+                    {project.task_count || 0} task{Number(project.task_count) !== 1 ? 's' : ''}
                   </span>
                   <ChevronRight
                     size={16}

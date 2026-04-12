@@ -12,6 +12,7 @@ export interface Project {
   owner_id: string;
   created_at: string;
   tasks?: Task[];
+  task_count?: number;
 }
 
 export interface Task {
