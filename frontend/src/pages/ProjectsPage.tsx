@@ -142,14 +142,16 @@ const ProjectsPage = () => {
                   </div>
 
                   {/* Delete button — visible on hover */}
-                  <button
-                    onClick={(e) => handleDeleteClick(e, project.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300
-                      hover:text-red-500 hover:bg-red-50 rounded-lg transition-all
-                      flex-shrink-0"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {project?.owner_id === user?.id && (
+                    <button
+                      onClick={(e) => handleDeleteClick(e, project.id)}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300
+                        hover:text-red-500 hover:bg-red-50 rounded-lg transition-all
+                        flex-shrink-0"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
 
                 {/* Description */}

@@ -9,6 +9,7 @@ import { parseApiError } from '../lib/errors';
 interface Props {
   task: Task;
   projectId: string;
+  isOwner: boolean;
   onEdit: (task: Task) => void;
   onDelete: (task: Task) => void;
 }
@@ -25,7 +26,7 @@ const STATUS_OPTIONS = [
   { value: 'done', label: 'Done' },
 ];
 
-const TaskCard = ({ task, projectId, onEdit, onDelete }: Props) => {
+const TaskCard = ({ task, projectId, isOwner, onEdit, onDelete }: Props) => {
   const queryClient = useQueryClient();
   const [optimisticStatus, setOptimisticStatus] = useState(task.status);
 
@@ -58,23 +59,25 @@ const TaskCard = ({ task, projectId, onEdit, onDelete }: Props) => {
         <h4 className="text-sm font-semibold text-slate-800 leading-snug flex-1">
           {task.title}
         </h4>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100
-          transition-opacity flex-shrink-0">
-          <button
-            onClick={() => onEdit(task)}
-            className="p-1.5 text-slate-400 hover:text-indigo-500
-              hover:bg-indigo-50 rounded-lg transition-colors"
-          >
-            <Pencil size={12} />
-          </button>
-          <button
-            onClick={() => onDelete(task)}
-            className="p-1.5 text-slate-400 hover:text-red-500
-              hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <Trash2 size={12} />
-          </button>
-        </div>
+        {isOwner && (
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100
+            transition-opacity flex-shrink-0">
+            <button
+              onClick={() => onEdit(task)}
+              className="p-1.5 text-slate-400 hover:text-indigo-500
+                hover:bg-indigo-50 rounded-lg transition-colors"
+            >
+              <Pencil size={12} />
+            </button>
+            <button
+              onClick={() => onDelete(task)}
+              className="p-1.5 text-slate-400 hover:text-red-500
+                hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Description — fixed height so cards stay same size */}
@@ -96,20 +99,27 @@ const TaskCard = ({ task, projectId, onEdit, onDelete }: Props) => {
           {task.priority}
         </span>
 
-        <select
-          value={optimisticStatus}
-          onChange={handleStatusChange}
-          onClick={(e) => e.stopPropagation()}
-          className="text-xs border border-slate-200 rounded-lg px-2 py-1
-            outline-none bg-slate-50 text-slate-600 hover:border-indigo-300
-            transition-colors max-w-[110px]"
-        >
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
+        {isOwner ? (
+          <select
+            value={optimisticStatus}
+            onChange={handleStatusChange}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs border border-slate-200 rounded-lg px-2 py-1
+              outline-none bg-slate-50 text-slate-600 hover:border-indigo-300
+              transition-colors max-w-[110px]"
+          >
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="text-xs border border-slate-200 rounded-lg px-2 py-1
+            bg-slate-50 text-slate-600">
+            {STATUS_OPTIONS.find(s => s.value === optimisticStatus)?.label}
+          </span>
+        )}
       </div>
 
       {/* Meta — assignee + due date */}

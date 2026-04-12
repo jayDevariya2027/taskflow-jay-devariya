@@ -10,6 +10,7 @@ import TaskCard from '../components/TaskCard';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { toast } from 'sonner';
 import { parseApiError } from '../lib/errors';
+import { useAuth } from '../context/AuthContext';
 
 const STATUS_COLUMNS = [
   { key: 'todo', label: 'Todo' },
@@ -27,6 +28,7 @@ const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
@@ -37,6 +39,8 @@ const ProjectDetailPage = () => {
     queryKey: ['project', id],
     queryFn: () => getProject(id!),
   });
+
+  const isOwner = project?.owner_id === user?.id;
 
   const deleteTaskMutation = useMutation({
     mutationFn: deleteTask,
@@ -119,16 +123,18 @@ const ProjectDetailPage = () => {
               </p>
             )}
           </div>
-          <button
-            onClick={() => setShowTaskModal(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600
-              hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
-              transition-colors shadow-sm flex-shrink-0"
-          >
-            <Plus size={15} />
-            <span className="hidden sm:inline">Add Task</span>
-            <span className="sm:hidden">Add</span>
-          </button>
+          {isOwner && (
+            <button
+              onClick={() => setShowTaskModal(true)}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600
+                hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
+                transition-colors shadow-sm flex-shrink-0"
+            >
+              <Plus size={15} />
+              <span className="hidden sm:inline">Add Task</span>
+              <span className="sm:hidden">Add</span>
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -163,15 +169,17 @@ const ProjectDetailPage = () => {
             <p className="text-slate-400 text-sm mt-1">
               Add your first task to get started
             </p>
-            <button
-              onClick={() => setShowTaskModal(true)}
-              className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-indigo-600
-                hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
-                transition-colors"
-            >
-              <Plus size={15} />
-              Add Task
-            </button>
+            {isOwner && (
+              <button
+                onClick={() => setShowTaskModal(true)}
+                className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-indigo-600
+                  hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
+                  transition-colors"
+              >
+                <Plus size={15} />
+                Add Task
+              </button>
+            )}
           </div>
         )}
 
@@ -209,6 +217,7 @@ const ProjectDetailPage = () => {
                           key={task.id}
                           task={task}
                           projectId={id!}
+                          isOwner={isOwner}
                           onEdit={handleEditTask}
                           onDelete={setDeletingTask}
                         />
