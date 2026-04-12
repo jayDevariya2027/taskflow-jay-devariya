@@ -34,6 +34,7 @@ const ProjectDetailPage = () => {
   const [editingTask, setEditingTask] = useState<Task | undefined>();
   const [deletingTask, setDeletingTask] = useState<Task | undefined>();
   const [statusFilter, setStatusFilter] = useState('');
+  const [assigneeFilter, setAssigneeFilter] = useState('');
 
   const { data: project, isLoading, isError } = useQuery({
     queryKey: ['project', id],
@@ -90,12 +91,24 @@ const ProjectDetailPage = () => {
   }
 
   const tasks: Task[] = project.tasks || [];
-  const filteredTasks = statusFilter
-    ? tasks.filter((t) => t.status === statusFilter)
-    : tasks;
+
+  const filteredTasks = tasks.filter((t) => {
+    const matchesStatus = statusFilter ? t.status === statusFilter : true;
+    const matchesAssignee = assigneeFilter ? t.assignee_id === assigneeFilter : true;
+    return matchesStatus && matchesAssignee;
+  });
 
   const getTasksByStatus = (status: string) =>
     filteredTasks.filter((t) => t.status === status);
+
+  const assignees = tasks
+    .filter((t) => t.assignee_id && t.assignee_name)
+    .reduce((acc: { id: string; name: string }[], t) => {
+      if (!acc.find((a) => a.id === t.assignee_id)) {
+        acc.push({ id: t.assignee_id!, name: t.assignee_name! });
+      }
+      return acc;
+    }, []);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -138,48 +151,80 @@ const ProjectDetailPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
-          <span className="text-sm text-slate-500 flex-shrink-0">Filter:</span>
-          <div className="flex gap-2 flex-shrink-0">
-            {[{ key: '', label: 'All' }, ...STATUS_COLUMNS].map((s) => (
-              <button
-                key={s.key}
-                onClick={() => setStatusFilter(s.key)}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium
-                  transition-colors whitespace-nowrap
-                  ${statusFilter === s.key
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
-                  }`}
-              >
-                {s.label}
-              </button>
-            ))}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          {/* Status filter */}
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <span className="text-sm text-slate-500 flex-shrink-0">Status:</span>
+            <div className="flex gap-2">
+              {[{ key: '', label: 'All' }, ...STATUS_COLUMNS].map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setStatusFilter(s.key)}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium
+                    transition-colors whitespace-nowrap
+                    ${statusFilter === s.key
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
+                    }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* Assignee filter — only show if there are assigned tasks */}
+          {assignees.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500 flex-shrink-0">Assignee:</span>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setAssigneeFilter('')}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium
+                    transition-colors whitespace-nowrap
+                    ${assigneeFilter === ''
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
+                    }`}
+                >
+                  All
+                </button>
+                {assignees.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => setAssigneeFilter(a.id)}
+                    className={`text-xs px-3 py-1.5 rounded-full font-medium
+                      transition-colors whitespace-nowrap
+                      ${assigneeFilter === a.id
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300'
+                      }`}
+                  >
+                    {a.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Empty state */}
-        {tasks.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
+        {tasks.length > 0 && filteredTasks.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center
               justify-center mb-4">
               <ClipboardList size={24} className="text-slate-400" />
             </div>
-            <h3 className="text-slate-700 font-semibold">No tasks yet</h3>
+            <h3 className="text-slate-700 font-semibold">No matching tasks</h3>
             <p className="text-slate-400 text-sm mt-1">
-              Add your first task to get started
+              Try changing your filters
             </p>
-            {isOwner && (
-              <button
-                onClick={() => setShowTaskModal(true)}
-                className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-indigo-600
-                  hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
-                  transition-colors"
-              >
-                <Plus size={15} />
-                Add Task
-              </button>
-            )}
+            <button
+              onClick={() => { setStatusFilter(''); setAssigneeFilter(''); }}
+              className="mt-4 text-sm text-indigo-600 hover:underline"
+            >
+              Clear filters
+            </button>
           </div>
         )}
 
