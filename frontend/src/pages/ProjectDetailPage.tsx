@@ -8,6 +8,8 @@ import { ArrowLeft, Plus, Loader2, ClipboardList } from 'lucide-react';
 import TaskModal from '../components/TaskModal';
 import TaskCard from '../components/TaskCard';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { toast } from 'sonner';
+import { parseApiError } from '../lib/errors';
 
 const STATUS_COLUMNS = [
   { key: 'todo', label: 'Todo' },
@@ -42,6 +44,10 @@ const ProjectDetailPage = () => {
       queryClient.invalidateQueries({ queryKey: ['project', id] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       setDeletingTask(undefined);
+    },
+    onError: (error: any) => {
+      setDeletingTask(undefined);
+      toast.error(parseApiError(error));
     },
   });
 

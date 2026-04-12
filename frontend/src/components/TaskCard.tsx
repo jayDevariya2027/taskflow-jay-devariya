@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateTask } from '../api/tasks';
 import { type Task } from '../types';
 import { Pencil, Trash2, Calendar, User } from 'lucide-react';
+import { toast } from 'sonner';
+import { parseApiError } from '../lib/errors';
 
 interface Props {
   task: Task;
@@ -32,14 +34,15 @@ const TaskCard = ({ task, projectId, onEdit, onDelete }: Props) => {
     onMutate: (status) => {
       setOptimisticStatus(status as typeof task.status);
     },
-    onError: () => {
+    onError: (error: any) => {
       setOptimisticStatus(task.status);
+      toast.error(parseApiError(error));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
-  });
+  }); 
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     statusMutation.mutate(e.target.value);

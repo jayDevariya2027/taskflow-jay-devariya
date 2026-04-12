@@ -4,6 +4,8 @@ import { createTask, updateTask } from '../api/tasks';
 import { getUsers } from '../api/users';
 import { type Task, type Member } from '../types';
 import { X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { parseApiError } from '../lib/errors';
 
 interface Props {
   projectId: string;
@@ -78,6 +80,9 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       onClose();
     },
+    onError: (error: any) => {
+      toast.error(parseApiError(error));
+    },
   });
 
   const validate = () => {
@@ -120,12 +125,6 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
 
         {/* Body — scrollable */}
         <div className="px-6 py-5 overflow-y-auto flex-1">
-          {mutation.isError && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200
-              text-red-600 text-sm">
-              Failed to save task. Please try again.
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Title */}

@@ -7,6 +7,8 @@ import { Plus, Folder, Trash2, ChevronRight, Loader2, LayoutDashboard } from 'lu
 import CreateProjectModal from '../components/CreateProjectModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
+import { parseApiError } from '../lib/errors';
 
 const ProjectsPage = () => {
   const { user } = useAuth();
@@ -25,6 +27,10 @@ const ProjectsPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       setDeleteId(null);
+    },
+    onError: (error: any) => {
+      setDeleteId(null);
+      toast.error(parseApiError(error));
     },
   });
 
