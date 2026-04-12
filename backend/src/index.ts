@@ -13,7 +13,11 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:80',
+    'http://localhost',
+  ],
   credentials: true,
 }));
 app.use(express.json());
@@ -32,12 +36,6 @@ app.use(pinoHttp({
   }
 }));
 
-// Routes
-app.use('/auth', authRoutes);
-app.use('/projects', projectRoutes);
-app.use('/', taskRoutes);
-app.use('/users', userRoutes);
-
 // Health check
 app.get('/health', async (req, res) => {
   try {
@@ -47,6 +45,12 @@ app.get('/health', async (req, res) => {
     res.status(500).json({ status: 'error', db: 'disconnected' });
   }
 });
+
+// Routes
+app.use('/auth', authRoutes);
+app.use('/projects', projectRoutes);
+app.use('/', taskRoutes);
+app.use('/users', userRoutes);
 
 // Error handler
 app.use(errorHandler);

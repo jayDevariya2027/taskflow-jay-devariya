@@ -1,7 +1,7 @@
 -- Clean existing data
-TRUNCATE TABLE tasks CASCADE;
-TRUNCATE TABLE projects CASCADE;
-TRUNCATE TABLE users CASCADE;
+-- TRUNCATE TABLE tasks CASCADE;
+-- TRUNCATE TABLE projects CASCADE;
+-- TRUNCATE TABLE users CASCADE;
 
 -- Seed user (password: password123)
 INSERT INTO users (id, name, email, password) VALUES (
@@ -47,4 +47,4 @@ INSERT INTO tasks (id, title, description, status, priority, project_id, assigne
   'medium',
   'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
   null
-);
+) ON CONFLICT DO NOTHING;
