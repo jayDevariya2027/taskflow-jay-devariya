@@ -45,14 +45,18 @@ export const createTask = async (
     due_date?: string;
   }
 ) => {
-  // Check project exists
+  // Check project exists and user is owner
   const project = await query(
-    'SELECT id FROM projects WHERE id = $1',
+    'SELECT id, owner_id FROM projects WHERE id = $1',
     [projectId]
   );
 
   if (project.rows.length === 0) {
     throw { status: 404, message: 'not found' };
+  }
+
+  if (project.rows[0].owner_id !== userId) {
+    throw { status: 403, message: 'forbidden' };
   }
 
   const result = await query(
