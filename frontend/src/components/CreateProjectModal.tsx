@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createProject } from '../api/projects';
+import { createProject, updateProject } from '../api/projects';
+import { type Project } from '../types';
 import { X, Loader2, Folder } from 'lucide-react';
 
 interface Props {
+  project?: Project;
   onClose: () => void;
 }
 
-const CreateProjectModal = ({ onClose }: Props) => {
+const CreateProjectModal = ({ project, onClose }: Props) => {
   const queryClient = useQueryClient();
+  const isEditing = !!project;
   const [form, setForm] = useState({ name: '', description: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    if (project) {
+      setForm({ name: project.name, description: project.description || '' });
+    }
+  }, [project]);
+
   const mutation = useMutation({
-    mutationFn: () => createProject(form.name, form.description || undefined),
+    mutationFn: () => isEditing
+      ? updateProject(project.id, { name: form.name, description: form.description || undefined })
+      : createProject(form.name, form.description || undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       onClose();
@@ -55,7 +66,7 @@ const CreateProjectModal = ({ onClose }: Props) => {
               <Folder size={16} className="text-indigo-600" />
             </div>
             <h2 className="text-base font-semibold text-slate-800">
-              Create Project
+              {isEditing ? 'Edit Project' : 'Create Project'}
             </h2>
           </div>
           <button
@@ -72,7 +83,7 @@ const CreateProjectModal = ({ onClose }: Props) => {
           {mutation.isError && (
             <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200
               text-red-600 text-sm">
-              Failed to create project. Please try again.
+              Failed to {isEditing ? 'edit' : 'create'} project. Please try again.
             </div>
           )}
 
@@ -138,7 +149,7 @@ const CreateProjectModal = ({ onClose }: Props) => {
                 {mutation.isPending && (
                   <Loader2 size={14} className="animate-spin" />
                 )}
-                {mutation.isPending ? 'Creating...' : 'Create Project'}
+                {mutation.isPending ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Project')}
               </button>
             </div>
           </form>

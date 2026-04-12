@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { getProjects, deleteProject } from '../api/projects';
 import { type Project } from '../types';
-import { Plus, Folder, Trash2, ChevronRight, Loader2, LayoutDashboard } from 'lucide-react';
+import { Plus, Folder, Trash2, Pencil, ChevronRight, Loader2, LayoutDashboard } from 'lucide-react';
 import CreateProjectModal from '../components/CreateProjectModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,7 @@ const ProjectsPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | undefined>();
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: projects, isLoading, isError } = useQuery({
@@ -77,7 +78,7 @@ const ProjectsPage = () => {
             </p>
           </div>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => { setEditingProject(undefined); setShowModal(true); }}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600
               hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
               transition-colors shadow-sm"
@@ -102,7 +103,7 @@ const ProjectsPage = () => {
               Create your first project to start organizing your tasks
             </p>
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() => { setEditingProject(undefined); setShowModal(true); }}
               className="mt-6 flex items-center gap-2 px-5 py-2.5 bg-indigo-600
                 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg
                 transition-colors shadow-sm"
@@ -141,16 +142,26 @@ const ProjectsPage = () => {
                     </div>
                   </div>
 
-                  {/* Delete button — visible on hover */}
+                  {/* Actions — visible on hover */}
                   {project?.owner_id === user?.id && (
-                    <button
-                      onClick={(e) => handleDeleteClick(e, project.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-300
-                        hover:text-red-500 hover:bg-red-50 rounded-lg transition-all
-                        flex-shrink-0"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-all flex-shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingProject(project);
+                          setShowModal(true);
+                        }}
+                        className="p-1.5 text-slate-300 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteClick(e, project.id)}
+                        className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -186,7 +197,7 @@ const ProjectsPage = () => {
       </div>
 
       {showModal && (
-        <CreateProjectModal onClose={() => setShowModal(false)} />
+        <CreateProjectModal project={editingProject} onClose={() => setShowModal(false)} />
       )}
 
       <ConfirmDialog
