@@ -40,6 +40,7 @@ const TaskCard = ({ task, projectId, isOwner, onEdit, onDelete }: Props) => {
       toast.error(parseApiError(error));
     },
     onSuccess: () => {
+      toast.success('Task status updated successfully');
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },

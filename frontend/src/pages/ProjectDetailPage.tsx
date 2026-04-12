@@ -46,6 +46,7 @@ const ProjectDetailPage = () => {
   const deleteTaskMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: () => {
+      toast.success('Task deleted successfully');
       queryClient.invalidateQueries({ queryKey: ['project', id] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       setDeletingTask(undefined);

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createProject, updateProject } from '../api/projects';
 import { type Project } from '../types';
 import { X, Loader2, Folder } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Props {
   project?: Project;
@@ -26,6 +27,7 @@ const CreateProjectModal = ({ project, onClose }: Props) => {
       ? updateProject(project.id, { name: form.name, description: form.description || undefined })
       : createProject(form.name, form.description || undefined),
     onSuccess: () => {
+      toast.success(isEditing ? 'Project updated successfully' : 'Project created successfully');
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       onClose();
     },

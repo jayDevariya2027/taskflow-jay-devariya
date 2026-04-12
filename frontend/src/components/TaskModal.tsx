@@ -76,6 +76,7 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
         : createTask(projectId, data);
     },
     onSuccess: () => {
+      toast.success(isEditing ? 'Task updated successfully' : 'Task created successfully');
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       onClose();
