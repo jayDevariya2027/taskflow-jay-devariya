@@ -6,8 +6,10 @@ import { type Project } from '../types';
 import { Plus, Folder, Trash2, ChevronRight, Loader2, LayoutDashboard } from 'lucide-react';
 import CreateProjectModal from '../components/CreateProjectModal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { useAuth } from '@/context/AuthContext';
 
 const ProjectsPage = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
@@ -157,6 +159,12 @@ const ProjectsPage = () => {
                   <span className="text-xs text-slate-400 font-medium">
                     {project.task_count || 0} task{Number(project.task_count) !== 1 ? 's' : ''}
                   </span>
+                  {project.owner_id !== user?.id && (
+                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5
+                      rounded-full font-medium">
+                      by {project.owner_name}
+                    </span>
+                  )}
                   <ChevronRight
                     size={15}
                     className="text-slate-300 group-hover:text-indigo-500

@@ -3,11 +3,13 @@ import { query } from '../db';
 export const getProjects = async (userId: string) => {
   const result = await query(
     `SELECT DISTINCT p.id, p.name, p.description, p.owner_id, p.created_at,
+     u.name as owner_name,
      COUNT(t.id) as task_count
      FROM projects p
+     JOIN users u ON u.id = p.owner_id
      LEFT JOIN tasks t ON t.project_id = p.id
      WHERE p.owner_id = $1 OR t.assignee_id = $1
-     GROUP BY p.id
+     GROUP BY p.id, u.name
      ORDER BY p.created_at DESC`,
     [userId]
   );

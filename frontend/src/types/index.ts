@@ -10,6 +10,7 @@ export interface Project {
   name: string;
   description?: string;
   owner_id: string;
+  owner_name?: string;
   created_at: string;
   tasks?: Task[];
   task_count?: number;
