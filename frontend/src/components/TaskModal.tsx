@@ -73,6 +73,7 @@ const TaskModal = ({ projectId, task, onClose }: Props) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       onClose();
     },
   });

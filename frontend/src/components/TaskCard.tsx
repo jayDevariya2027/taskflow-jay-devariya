@@ -35,6 +35,7 @@ const TaskCard = ({ task, projectId, onEdit, onDelete }: Props) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
 

@@ -42,6 +42,7 @@ const ProjectDetailPage = () => {
     mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project', id] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       setDeletingTask(undefined);
     },
   });
