@@ -2,7 +2,7 @@
 set -e
 
 echo "Running migrations..."
-npm run migrate:up
+npx node-pg-migrate up --database-url "$DATABASE_URL"
 
 echo "Running seeds..."
 psql $DATABASE_URL -f seeds/seed.sql
